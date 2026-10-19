@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Repository - Published Archives</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #0f172a;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar h1 { margin: 0; font-size: 22px; font-weight: 600; }
+        .login-btn {
+            background-color: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .login-btn:hover { background-color: #1d4ed8; }
+        .hero {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .hero h2 { margin: 0 0 15px 0; font-size: 32px; }
+        .hero p { margin: 0; color: #94a3b8; font-size: 16px; }
+        .search-container {
+            max-width: 600px;
+            margin: -25px auto 40px auto;
+            background: white;
+            padding: 8px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+        }
+        .search-container input {
+            flex: 1;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            outline: none;
+            border-radius: 30px;
+        }
+        .search-container button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .search-container button:hover { background-color: #1d4ed8; }
+        .main-content { max-width: 1000px; margin: 0 auto; padding: 0 20px 60px 20px; }
+        .archive-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);
+        }
+        .archive-title { margin-top: 0; color: #1e293b; font-size: 22px; }
+        .meta-tag {
+            display: inline-block;
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .abstract-text { color: #334155; line-height: 1.6; font-size: 16px; text-align: justify; }
+        .no-records {
+            text-align: center;
+            padding: 80px 20px;
+            color: #64748b;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>Institutional Research Vault</h1>
+        <a href="{% url 'login' %}" class="login-btn">Portal Login Door</a>
+    </div>
+
+    <div class="hero">
+        <h2>Discover University Research Abstracts</h2>
+        <p>A multi-department secure relational repository built using Python & Django</p>
+    </div>
+
+    <form method="GET" action="{% url 'public_archive' %}" class="search-container">
+        <input type="text" name="q" placeholder="Search by research keywords or paper titles..." value="{{ query|default:'' }}">
+        <button type="submit">Execute Search</button>
+    </form>
+
+    <div class="main-content">
+        {% if query %}
+            <p style="color: #64748b; margin-bottom: 20px;">Showing results for search matching: <strong>"{{ query }}"</strong> | <a href="{% url 'public_archive' %}" style="color: #2563eb;">Clear search filters</a></p>
+        {% endif %}
+
+        {% for project in projects %}
+        <div class="archive-card">
+            <h3 class="archive-title">{{ project.title }}</h3>
+            <div class="meta-tag">
+                Department: {{ project.get_category_display }} | Date: {{ project.submission_date|date:"M Y" }}
+            </div>
+            <p class="abstract-text">
+                {{ project.abstract }}
+            </p>
+        </div>
+        {% empty %}
+        <div class="no-records">
+            <h3>No Published Artifacts Discovered</h3>
+            <p>There are currently no research models flagged as "Approved" matching your query criteria.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

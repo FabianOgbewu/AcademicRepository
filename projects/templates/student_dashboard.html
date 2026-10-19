@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Repository - Student Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h2 { margin: 0; color: #1e293b; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
+        
+        /* Table Layout */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th { background-color: #f8fafc; color: #475569; }
+        
+        /* Status Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .PENDING { background-color: #fef3c7; color: #d97706; }
+        .APPROVED { background-color: #dcfce7; color: #15803d; }
+        .REVISION { background-color: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-flex">
+            <h2>Welcome to Your Research Workspace</h2>
+            <!-- Link to log out safely -->
+            <a href="{% url 'logout' %}" class="btn btn-danger">Secure Logout</a>
+        </div>
+
+        <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <p style="color: #64748b; margin: 0;">Track the active workflow states of your submitted project abstracts below.</p>
+            <!-- Link to jump to the submission form -->
+            <a href="{% url 'submit_project' %}" class="btn btn-primary">+ Submit New Project Abstract</a>
+        </div>
+
+        <!-- The Structured Archive Matrix -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Project Title</th>
+                    <th>Category</th>
+                    <th>Date Uploaded</th>
+                    <th>Status</th>
+                    <th>Supervisor Feedback Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Python loop that draws your database records dynamically -->
+                {% for project in projects %}
+                <tr>
+                    <td style="font-weight: 600; color: #1e293b;">{{ project.title }}</td>
+                    <td>{{ project.get_category_display }}</td>
+                    <td style="color: #64748b;">{{ project.submission_date|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="badge {{ project.status }}">{{ project.status }}</span>
+                    </td>
+                    <td style="color: #475569; font-style: italic;">
+                        {% if project.supervisor_feedback %}
+                            {{ project.supervisor_feedback }}
+                        {% else %}
+                            <span style="color: #cbd5e1;">No feedback logged yet.</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #94a3b8; padding: 40px 0;">
+                        You have not uploaded any research profiles to the network database yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

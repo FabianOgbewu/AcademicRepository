@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Academic Repository - Supervisor Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h2 { margin: 0; color: #0f172a; }
+        .logout-btn {
+            padding: 10px 20px;
+            background-color: #ef4444;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .project-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .project-title { color: #1e293b; margin-top: 0; }
+        .meta-text { color: #64748b; font-size: 14px; margin-bottom: 15px; }
+        .abstract-box {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-left: 4px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #334155;
+        }
+        .review-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 6px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-sizing: border-box;
+            height: 80px;
+        }
+        .actions { display: flex; gap: 15px; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .approve { background-color: #16a34a; }
+        .reject { background-color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Supervisor Administrative Panel</h2>
+            <a href="{% url 'logout' %}" class="logout-btn">Secure Logout</a>
+        </div>
+
+        <p style="color: #475569; margin-bottom: 35px;">The following student abstracts are currently waiting on a relational status update.</p>
+
+        <!-- Loop through all PENDING abstract columns -->
+        {% for project in projects %}
+        <div class="project-card">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <div class="meta-text">
+                Submitted by: <strong>{{ project.submitted_by.username }}</strong> | Department: {{ project.get_category_display }}
+            </div>
+            <div class="abstract-box">
+                {{ project.abstract }}
+            </div>
+
+            <!-- Review Processing Form targeting the specific record ID -->
+            <form action="{% url 'review_project' project.id %}" method="POST" class="review-form">
+                {% csrf_token %}
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-weight:600; color:#334155;">Supervisor Review Notes</label>
+                    <textarea name="feedback" placeholder="Type evaluations or change directives here..." required></textarea>
+                </div>
+                <div class="actions">
+                    <button type="submit" name="status" value="APPROVED" class="btn approve">Approve & Publish</button>
+                    <button type="submit" name="status" value="REVISION" class="btn reject">Request Structural Revision</button>
+                </div>
+            </form>
+        </div>
+        {% empty %}
+        <div style="text-align: center; color: #94a3b8; padding: 60px 0; border: 2px dashed #cbd5e1; border-radius: 6px;">
+            No pending submissions are currently waiting in the review cache grid.
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
